@@ -23,7 +23,7 @@ let totalImages = 0;
 
 const searchForm = document.querySelector('.form');
 
-searchForm.addEventListener('submit', async e => {
+searchForm.addEventListener('submit', e => {
   e.preventDefault();
   scroll();
   query = e.target.elements.query.value.trim().toLowerCase();
@@ -39,54 +39,58 @@ searchForm.addEventListener('submit', async e => {
   clearGallery();
   showLoader();
 
-  try {
-    const { hits: images, totalHits } = await fetchImages(query, page);
-    totalImages = totalHits;
+  fetchImages(query, page)
+    .then(({ hits: images, totalHits }) => {
+      totalImages = totalHits;
 
-    if (!totalImages) {
-      iziToast.error({
-        message:
-          'Sorry, there are no images matching your search query. Please try again!',
-      });
-      return;
-    }
-    renderGallery(images);
+      if (!totalImages) {
+        iziToast.error({
+          message:
+            'Sorry, there are no images matching your search query. Please try again!',
+        });
+        return;
+      }
+      renderGallery(images);
 
-    if (totalImages <= PER_PAGE * page) {
-      hideLoadMoreButton();
-      return;
-    }
-    showLoadMoreButton();
-  } catch (error) {
-    iziToast.error({ message: e.message });
-  } finally {
-    hideLoader();
-  }
+      if (totalImages <= PER_PAGE * page) {
+        hideLoadMoreButton();
+        return;
+      }
+      showLoadMoreButton();
+    })
+    .catch(error => {
+      iziToast.error({ message: e.message });
+    })
+    .finally(() => {
+      hideLoader();
+    });
 });
 
-refs.loadMoreBtn.addEventListener('click', async () => {
+refs.loadMoreBtn.addEventListener('click', () => {
   page += 1;
   showLoader();
   hideLoadMoreButton();
-  try {
-    const { hits: images } = await fetchImages(query, page);
-    renderGallery(images);
-    scroll();
+  fetchImages(query, page)
+    .then(({ hits: images }) => {
+      renderGallery(images);
+      scroll();
 
-    if (totalImages <= PER_PAGE * page) {
-      iziToast.success({
-        message: 'We`re sorry, but you`ve reached the end of search results.',
-      });
-      hideLoadMoreButton();
-      return;
-    }
+      if (totalImages <= PER_PAGE * page) {
+        iziToast.success({
+          message: 'We`re sorry, but you`ve reached the end of search results.',
+        });
+        hideLoadMoreButton();
+        return;
+      }
 
-    showLoadMoreButton();
-  } catch (e) {
-    iziToast.error({ message: e.message });
-  } finally {
-    hideLoader();
-  }
+      showLoadMoreButton();
+    })
+    .catch(error => {
+      iziToast.error({ message: e.message });
+    })
+    .finally(() => {
+      hideLoader();
+    });
 });
 
 export const scroll = () => {
