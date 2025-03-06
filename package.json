@@ -1,11 +1,11 @@
 {
-  "name": "js-test-12-no-async-await",
+  "name": "js-test-12-main-pixabay-no-async-awaitt",
   "private": true,
   "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build --base=/js-test-12-no-async-await/",
+    "build": "vite build --base=/js-test-12-main-pixabay-no-async-awaitt/",
     "preview": "vite preview"
   },
   "devDependencies": {
